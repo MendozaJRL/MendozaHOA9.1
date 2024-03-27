@@ -1,0 +1,24 @@
+# Playbook that builds a Certificate Authority using SSL
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Install OpenSSL
+    apt:
+      name: openssl
+      state: present
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Build CA Private Key
+    openssl_privatekey:
+      path: /etc/ssl/private/ca.key
+      size: 2048
+
+  - name: Build CA Certificate
+    openssl_certificate:
+      path: /etc/ssl/certs/ca.crt
+      privatekey_path: /etc/ssl/private/ca.key
+      state: present
+      provider: selfsigned
+    become: yes
